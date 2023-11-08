@@ -1,5 +1,12 @@
+/**
+ * main - simple shell proram
+ * Return: Sucess on execution of the program
+ */
+
 #include <stdio.h>
 #include "main.h"
+
+
 
 int main(void)
 {
@@ -15,6 +22,7 @@ int main(void)
 		{
 			exit(EXIT_FAILURE);
 		}
+		args = _tokenize(buffer);
 	}
 	return (0);
 }

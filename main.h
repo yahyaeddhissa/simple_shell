@@ -9,6 +9,6 @@
 int _putchar(char);
 void _prompt(void);
 char **_tokenize(char *buffer);
-
+char *_strdup(char *str);
 
 #endif /* MAIN_H */
