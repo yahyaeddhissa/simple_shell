@@ -6,6 +6,9 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include <sys/types.h>
+#include <sys/wait.h>
+
 int _putchar(char);
 void _prompt(void);
 char **_tokenize(char *buffer);
