@@ -7,7 +7,7 @@
 #include <stdlib.h>
 
 int _putchar(char);
-int _prompt(void);
+void _prompt(void);
 char **_tokenize(char *buffer);
 
 
