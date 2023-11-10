@@ -25,6 +25,46 @@ int main(void)
 
 		args = _tokenize(buffer);
 
+		if (strcmp(args[0], "cd") == 0)
+		{
+			const char *directory;
+			char prev_directory[PATH_MAX];
+			char current_directory[PATH_MAX];
+
+			directory = (args[1] == NULL) ? getenv("HOME") : args[1];
+
+			if (strcmp(directory, "-") == 0)
+			{
+				if (getcwd(prev_directory, sizeof(prev_directory)) == NULL)
+				{
+					perror("getcwd");
+					continue;
+				}
+				directory = getenv("OLDPWD");
+			}
+
+			if (chdir(directory) != 0)
+			{
+				perror("chdir");
+			}
+			else
+			{
+				if (getcwd(current_directory, sizeof(current_directory)) == NULL)
+				{
+					perror("getcwd");
+				}
+				else
+				{
+					setenv("PWD", current_directory, 1);
+					setenv("OLDPWD", prev_directory, 1);
+				}
+			}
+
+			free(args);
+
+			continue;
+		}
+
 		if (strcmp(args[0], "setenv") == 0)
 		{
 			if (args[1] != NULL && args[2] != NULL)
