@@ -25,6 +25,44 @@ int main(void)
 
 		args = _tokenize(buffer);
 
+		if (strcmp(args[0], "setenv") == 0)
+		{
+			if (args[1] != NULL && args[2] != NULL)
+			{
+				if (setenv(args[1], args[2], 1) != 0)
+				{
+					perror("setenv");
+				}
+			}
+			else
+			{
+				exit(0);
+			}
+
+			free(args);
+
+			continue;
+		}
+
+		if (strcmp(args[0], "unsetenv") == 0)
+		{
+			if (args[1] != NULL)
+			{
+				if (unsetenv(args[1]) != 0)
+				{
+					perror("unsetenv");
+				}
+			}
+			else
+			{
+				exit(0);
+			}
+
+			free(args);
+
+			continue;
+		}
+
 		if (strcmp(args[0], "exit") == 0)
 		{
 			int exit_status = 0;
