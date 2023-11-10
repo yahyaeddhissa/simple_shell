@@ -25,6 +25,13 @@ int main(void)
 
 		args = _tokenize(buffer);
 
+		if (strcmp(args[0], "exit") == 0)
+		{
+			free(args);
+			free(buffer);
+			exit(0);
+		}
+
 		pid = fork();
 		if (pid == 0)
 		{
