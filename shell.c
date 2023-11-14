@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include "main.h"
 
+extern char **environ;
+
 /**
  * main - simple shell proram
  *
@@ -120,8 +122,11 @@ int main(void)
 		pid = fork();
 		if (pid == 0)
 		{
-			execvp(args[0], args);
-			exit(0);
+			if (execve(args[0], args, environ) == -1)
+			{
+				perror("execve");
+				exit(0);
+			}
 		}
 		else if (pid == -1)
 		{
