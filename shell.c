@@ -1,6 +1,8 @@
 #include "main.h"
 
-int main(__attribute_maybe_unused__ int argc, char *argv[])
+#define UNUSED(x) (void)(x)
+
+int main(int argc, char *argv[])
 {
 	char *buffer = NULL;
 	char *line, *path, *fullpath;
@@ -10,6 +12,8 @@ int main(__attribute_maybe_unused__ int argc, char *argv[])
 	/*ssize_t read_n;*/
 	/*pid_t pid;*/
 	struct stat buf;
+
+	UNUSED(argc);
 
 	while (1)
 	{
