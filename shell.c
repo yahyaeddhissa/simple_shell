@@ -2,12 +2,12 @@
 
 extern char **environ;
 
-int main(void)
+int main(__attribute_maybe_unused__ int argc, char *argv[])
 {
 	char *buffer = NULL, **args;
 	size_t i = 0;
 	ssize_t read_n;
-	pid_t pid;
+	pid_t pid, parent_pid;
 
 	while (1)
 	{
@@ -24,8 +24,8 @@ int main(void)
 		if (strcmp(args[0], "cd") == 0)
 		{
 			const char *directory;
-			char prev_directory[CHAR_MAX];
-			char current_directory[CHAR_MAX];
+			char prev_directory[PATH_MAX];
+			char current_directory[PATH_MAX];
 
 			directory = (args[1] == NULL) ? getenv("HOME") : args[1];
 
@@ -113,16 +113,17 @@ int main(void)
 			exit(exit_status);
 		}
 
+		parent_pid = getpid();
+
 		pid = fork();
 		if (pid == 0)
 		{
 			if (execve(args[0], args, environ) == -1)
 			{
-				char path_buffer[CHAR_MAX];
+				char path_buffer[PATH_MAX];
 				snprintf(path_buffer, sizeof(path_buffer), "/bin/%s", args[0]);
 				execve(path_buffer, args, environ);
 
-				perror("execve");
 				exit(0);
 			}
 		}
