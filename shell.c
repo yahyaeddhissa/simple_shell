@@ -122,7 +122,7 @@ int main(void)
 				snprintf(path_buffer, sizeof(path_buffer), "/bin/%s", args[0]);
 				execve(path_buffer, args, environ);
 
-				fprintf(stderr, "%s: %lu: %s: not found\n", args[0], (unsigned long)getpid(), args[0]);
+				perror("execve");
 				exit(0);
 			}
 		}
