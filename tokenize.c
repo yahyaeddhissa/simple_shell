@@ -17,7 +17,7 @@ char **_tokenize(char *buffer)
 		return (NULL);
 	}
 
-	buf_copy = _strdup(buffer); /* Dynamic mem allocation */
+	buf_copy = _strdup(buffer);
 	if (buf_copy == NULL)
 	{
 		return (NULL);
