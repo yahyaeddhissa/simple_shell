@@ -3,11 +3,6 @@
 
 extern char **environ;
 
-/**
- * main - simple shell proram
- *
- * Return: 0 (success)
- */
 int main(void)
 {
 	char *buffer = NULL, **args;
@@ -30,8 +25,8 @@ int main(void)
 		if (strcmp(args[0], "cd") == 0)
 		{
 			const char *directory;
-			char prev_directory[PATH_MAX];
-			char current_directory[PATH_MAX];
+			char prev_directory[CHAR_MAX];
+			char current_directory[CHAR_MAX];
 
 			directory = (args[1] == NULL) ? getenv("HOME") : args[1];
 
@@ -124,7 +119,7 @@ int main(void)
 		{
 			if (execve(args[0], args, environ) == -1)
 			{
-				char path_buffer[PATH_MAX];
+				char path_buffer[CHAR_MAX];
 				snprintf(path_buffer, sizeof(path_buffer), "/bin/%s", args[0]);
 				execve(path_buffer, args, environ);
 
