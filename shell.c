@@ -124,6 +124,10 @@ int main(void)
 		{
 			if (execve(args[0], args, environ) == -1)
 			{
+				char path_buffer[PATH_MAX];
+				snprintf(path_buffer, sizeof(path_buffer), "/bin/%s", args[0]);
+				execve(path_buffer, args, environ);
+
 				perror("execve");
 				exit(0);
 			}
