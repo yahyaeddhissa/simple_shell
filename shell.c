@@ -2,32 +2,39 @@
 
 extern char **environ;
 
-int main(void)
+int main(__attribute_maybe_unused__ int argc, char *argv[])
 {
-	char *buffer = NULL, **args;
-	size_t i = 0;
-	ssize_t read_n;
-	pid_t pid;
+	char *buffer = NULL;
+	char *line, *path, *fullpath;
+	char **tokens;
+	int flag, child_status;
+	/*size_t i = 0;*/
+	/*ssize_t read_n;*/
+	/*pid_t pid;*/
+	struct stat buf;
 
 	while (1)
 	{
-		_prompt();
+		prompt(STDIN_FILENO, buf);
 
-		read_n = getline(&buffer, &i, stdin);
-		if (read_n == -1)
+		line = _getline(stdin);
+		if (_strcmp(line, "\n", 1) == 0)
 		{
-			exit(0);
+			free(line);
+			continue;
 		}
 
-		args = _tokenize(buffer);
+		tokens = tokenizer(line);
+		if (tokens[0] == NULL)
+			continue;
 
-		if (strcmp(args[0], "cd") == 0)
+		if (strcmp(tokens[0], "cd") == 0)
 		{
 			const char *directory;
 			char prev_directory[CHAR_MAX];
 			char current_directory[CHAR_MAX];
 
-			directory = (args[1] == NULL) ? getenv("HOME") : args[1];
+			directory = (tokens[1] == NULL) ? getenv("HOME") : tokens[1];
 
 			if (strcmp(directory, "-") == 0)
 			{
@@ -56,16 +63,16 @@ int main(void)
 				}
 			}
 
-			free(args);
+			free(tokens);
 
 			continue;
 		}
 
-		if (strcmp(args[0], "setenv") == 0)
+		if (strcmp(tokens[0], "setenv") == 0)
 		{
-			if (args[1] != NULL && args[2] != NULL)
+			if (tokens[1] != NULL && tokens[2] != NULL)
 			{
-				if (setenv(args[1], args[2], 1) != 0)
+				if (setenv(tokens[1], tokens[2], 1) != 0)
 				{
 					perror("setenv");
 				}
@@ -75,16 +82,16 @@ int main(void)
 				exit(0);
 			}
 
-			free(args);
+			free(tokens);
 
 			continue;
 		}
 
-		if (strcmp(args[0], "unsetenv") == 0)
+		if (strcmp(tokens[0], "unsetenv") == 0)
 		{
-			if (args[1] != NULL)
+			if (tokens[1] != NULL)
 			{
-				if (unsetenv(args[1]) != 0)
+				if (unsetenv(tokens[1]) != 0)
 				{
 					perror("unsetenv");
 				}
@@ -94,48 +101,47 @@ int main(void)
 				exit(0);
 			}
 
-			free(args);
+			free(tokens);
 
 			continue;
 		}
 
-		if (strcmp(args[0], "exit") == 0)
+		if (strcmp(tokens[0], "exit") == 0)
 		{
 			int exit_status = 0;
 
-			if (args[1] != NULL)
+			if (tokens[1] != NULL)
 			{
-				exit_status = atoi(args[1]);
+				exit_status = atoi(tokens[1]);
 			}
 
-			free(args);
+			free(tokens);
 			free(buffer);
 			exit(exit_status);
 		}
 
-		pid = fork();
-		if (pid == 0)
+		/* pid = fork(); */
+		flag = 0;
+		path = _getenv("PATH");
+		fullpath = _which(tokens[0], fullpath, path);
+		if (fullpath == NULL)
 		{
-			if (execve(args[0], args, environ) == -1)
-			{
-				char path_buffer[CHAR_MAX];
-				snprintf(path_buffer, sizeof(path_buffer), "/bin/%s", args[0]);
-				execve(path_buffer, args, environ);
-
-				perror("execve");
-				exit(0);
-			}
-		}
-		else if (pid == -1)
-		{
-			exit(0);
+			fullpath = tokens[0];
 		}
 		else
 		{
-			wait(NULL);
+			flag = 1;
 		}
 
-		free(args);
+		child_status = child(fullpath, tokens, argv);
+		if (child_status == -1)
+		{
+			errors(2);
+		}
+		free(path);
+		free(tokens);
+		if (flag == 1)
+			free(fullpath);
 	}
 	free(buffer);
 
