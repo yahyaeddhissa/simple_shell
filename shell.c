@@ -1,7 +1,5 @@
 #include "main.h"
 
-extern char **environ;
-
 int main(__attribute_maybe_unused__ int argc, char *argv[])
 {
 	char *buffer = NULL;
