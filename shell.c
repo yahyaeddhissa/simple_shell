@@ -37,9 +37,16 @@ int main(void)
 
 		if (strcmp(args[0], "exit") == 0)
 		{
+			int exit_status = 0;
+
+			if (args[1] != NULL)
+			{
+				exit_status = atoi(args[1]);
+			}
+
 			free(args);
 			free(buffer);
-			exit(0);
+			exit(exit_status);
 		}
 
 		else if (strcmp(args[0], "env") == 0)
