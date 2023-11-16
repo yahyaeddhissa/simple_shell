@@ -45,6 +45,8 @@ int main(void)
 		else if (strcmp(args[0], "env") == 0)
 		{
 			_env();
+			free(args);
+			free(buffer);
 		}
 		else
 		{
