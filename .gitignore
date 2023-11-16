@@ -17,3 +17,6 @@ tramp
 [._]s[a-rt-v][a-z]
 [._]ss[a-gi-z]
 [._]sw[a-p]
+
+# Valgrind output file
+valgrind-out.txt

@@ -1,149 +1,47 @@
+#include <stdio.h>
 #include "main.h"
 
-#define UNUSED(x) (void)(x)
-
-int main(int argc, char *argv[])
+/**
+ * main - simple shell proram
+ *
+ * Return: 0 (success)
+ */
+int main(void)
 {
-	char *buffer = NULL;
-	char *line, *path, *fullpath;
-	char **tokens;
-	int flag, child_status;
-	/*size_t i = 0;*/
-	/*ssize_t read_n;*/
-	/*pid_t pid;*/
-	struct stat buf;
-
-	UNUSED(argc);
+	char *buffer = NULL, **args;
+	size_t i = 0;
+	ssize_t read_n;
+	pid_t pid;
 
 	while (1)
 	{
-		prompt(STDIN_FILENO, buf);
+		_prompt();
 
-		line = _getline(stdin);
-		if (_strcmp(line, "\n", 1) == 0)
+		read_n = getline(&buffer, &i, stdin);
+		if (read_n == -1)
 		{
-			free(line);
-			continue;
+			exit(EXIT_FAILURE);
 		}
 
-		tokens = tokenizer(line);
-		if (tokens[0] == NULL)
-			continue;
+		args = _tokenize(buffer);
 
-		if (strcmp(tokens[0], "cd") == 0)
+		pid = fork();
+		if (pid == 0)
 		{
-			const char *directory;
-			char prev_directory[CHAR_MAX];
-			char current_directory[CHAR_MAX];
-
-			directory = (tokens[1] == NULL) ? getenv("HOME") : tokens[1];
-
-			if (strcmp(directory, "-") == 0)
-			{
-				if (getcwd(prev_directory, sizeof(prev_directory)) == NULL)
-				{
-					perror("getcwd");
-					continue;
-				}
-				directory = getenv("OLDPWD");
-			}
-
-			if (chdir(directory) != 0)
-			{
-				perror("chdir");
-			}
-			else
-			{
-				if (getcwd(current_directory, sizeof(current_directory)) == NULL)
-				{
-					perror("getcwd");
-				}
-				else
-				{
-					setenv("PWD", current_directory, 1);
-					setenv("OLDPWD", prev_directory, 1);
-				}
-			}
-
-			free(tokens);
-
-			continue;
+			execve(args[0], args, environ);
+			perror("Error");
+			exit(EXIT_FAILURE);
 		}
-
-		if (strcmp(tokens[0], "setenv") == 0)
+		else if (pid == -1)
 		{
-			if (tokens[1] != NULL && tokens[2] != NULL)
-			{
-				if (setenv(tokens[1], tokens[2], 1) != 0)
-				{
-					perror("setenv");
-				}
-			}
-			else
-			{
-				exit(0);
-			}
-
-			free(tokens);
-
-			continue;
-		}
-
-		if (strcmp(tokens[0], "unsetenv") == 0)
-		{
-			if (tokens[1] != NULL)
-			{
-				if (unsetenv(tokens[1]) != 0)
-				{
-					perror("unsetenv");
-				}
-			}
-			else
-			{
-				exit(0);
-			}
-
-			free(tokens);
-
-			continue;
-		}
-
-		if (strcmp(tokens[0], "exit") == 0)
-		{
-			int exit_status = 0;
-
-			if (tokens[1] != NULL)
-			{
-				exit_status = atoi(tokens[1]);
-			}
-
-			free(tokens);
-			free(buffer);
-			exit(exit_status);
-		}
-
-		/* pid = fork(); */
-		flag = 0;
-		path = _getenv("PATH");
-		fullpath = _which(tokens[0], fullpath, path);
-		if (fullpath == NULL)
-		{
-			fullpath = tokens[0];
+			exit(EXIT_FAILURE);
 		}
 		else
 		{
-			flag = 1;
+			wait(NULL);
 		}
 
-		child_status = child(fullpath, tokens, argv);
-		if (child_status == -1)
-		{
-			errors(2);
-		}
-		free(path);
-		free(tokens);
-		if (flag == 1)
-			free(fullpath);
+		free(args);
 	}
 	free(buffer);
 
