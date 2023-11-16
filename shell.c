@@ -1,6 +1,17 @@
 #include <stdio.h>
 #include "main.h"
 
+void _env()
+{
+	char **env_var;
+
+	for (env_var = environ; *env_var != NULL; env_var++)
+	{
+		write(STDOUT_FILENO, *env_var, strlen(*env_var));
+		write(STDOUT_FILENO, "\n", 1);
+	}
+}
+
 /**
  * main - simple shell proram
  *
@@ -31,23 +42,30 @@ int main(void)
 			exit(0);
 		}
 
-		pid = fork();
-		if (pid == 0)
+		else if (strcmp(args[0], "env") == 0)
 		{
-			execve(args[0], args, environ);
-			perror("Error");
-			exit(EXIT_FAILURE);
-		}
-		else if (pid == -1)
-		{
-			exit(EXIT_FAILURE);
+			_env();
 		}
 		else
 		{
-			wait(NULL);
+			pid = fork();
+			if (pid == 0)
+			{
+				execve(args[0], args, environ);
+				perror("Error");
+				exit(EXIT_FAILURE);
+			}
+			else if (pid == -1)
+			{
+				exit(EXIT_FAILURE);
+			}
+			else
+			{
+				wait(NULL);
+			}
+			free(args);
+			free(buffer);
 		}
-		free(args);
-		free(buffer);
 	}
 
 	return (0);
