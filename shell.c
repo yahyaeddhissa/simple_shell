@@ -40,10 +40,10 @@ int main(void)
 		{
 			wait(NULL);
 		}
-
+		free(read_n);
 		free(args);
+		free(buffer);
 	}
-	free(buffer);
 
 	return (0);
 }
