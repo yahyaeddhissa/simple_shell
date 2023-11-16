@@ -14,7 +14,7 @@
 extern char **environ;
 
 int _putchar(char);
-void _prompt(void);
+void _prompt();
 char **_tokenize(char *buffer);
 char *_strdup(char *str);
 

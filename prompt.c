@@ -3,16 +3,12 @@
 /**
  * _prompt - checks mode and prints prompt if in interactive mode
  * @fd: file stream
- * @buf: buffer
+ * @buffer: buffer
  **/
-void _prompt(void)
+void _prompt()
 {
-    char *ptr = "$ ";
-    int index = 0;
-
-    while (ptr[index] != '\0')
+    if (isatty(STDIN_FILENO))
     {
-        _putchar(ptr[index]);
-        index++;
+        write(STDOUT_FILENO, "$ ", 2);
     }
 }
