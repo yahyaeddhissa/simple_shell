@@ -9,20 +9,19 @@
 int main(void)
 {
 	char *buffer = NULL, **args;
-	size_t i = 0;
-	ssize_t read_n;
+	size_t bufsize = 32;
+	ssize_t line;
 	pid_t pid;
 
 	while (1)
 	{
 		_prompt();
 
-		read_n = getline(&buffer, &i, stdin);
-		if (read_n == -1)
+		line = getline(&buffer, &bufsize, stdin);
+		if (line == -1)
 		{
 			exit(EXIT_FAILURE);
 		}
-
 		args = _tokenize(buffer);
 
 		pid = fork();
@@ -40,7 +39,6 @@ int main(void)
 		{
 			wait(NULL);
 		}
-		free(read_n);
 		free(args);
 		free(buffer);
 	}
