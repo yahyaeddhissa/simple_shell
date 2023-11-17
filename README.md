@@ -9,3 +9,4 @@ into something which the kernel can understand.
 
 To achieve this, we break the problem into steps
 Read -> Evaluate -> print -> loop
+Do hard things
